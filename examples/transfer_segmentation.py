@@ -82,6 +82,7 @@ if __name__ == "__main__":
 
     # restore best checkpoint
     best_ckpt = torchmanager.train.Checkpoint.from_saved(best_ckpt_dir)
+    manager.model = best_ckpt.model
 
     # remove pruning wrap
     if prune.is_pruned(best_ckpt.model):

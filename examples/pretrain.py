@@ -45,13 +45,11 @@ if __name__ == "__main__":
     # train model
     manager.fit(training_dataset, config.epochs, show_verbose=config.show_verbose, val_dataset=validation_dataset, use_multi_gpus=config.use_multi_gpus, callbacks_list=callbacks_list)
 
-    # save best model
-    ckpt = torchmanager.train.Checkpoint.from_saved(best_ckpt_dir)
-
     # remove pruning wrap
-    for m in ckpt.model.modules():
+    for m in manager.model.modules():
         if prune.is_pruned(m) and hasattr(m, "weight"):
             prune.remove(m, "weight")
 
     # export
-    torch.save(ckpt.model, config.output_model_path)
+    torch.save(manager.model, config.output_model_path)
+    summary = manager.test(imagenet.test_loader, use_multi_gpus=config.use_multi_gpus)
