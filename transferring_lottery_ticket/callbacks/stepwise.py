@@ -5,14 +5,14 @@ from typing import Any
 from .protocols import Steppable
 
 
-class PruningRatio(Callback):
+class Stepwise(Callback):
     """
-    The callback to step `_PruningScheduler`
+    The callback to step `Steppable`
 
     * extends: `torchmanager.callbacks.Callback`
 
     - Properties:
-        - scheduler: A `_PruningScheduler` to update the pruning ratio and mask
+        - scheduler: A object that performs `Steppable` protocol to update
     """
 
     # properties
@@ -23,7 +23,7 @@ class PruningRatio(Callback):
         Constructor
 
         - Parameters:
-            - scheduler: A pruning scheduler that performs to `Steppable` protocol to update the pruning ratio and mask
+            - scheduler: A object that performs `Steppable` protocol to update
         """
         super().__init__()
         self.scheduler = scheduler

@@ -57,7 +57,7 @@ if __name__ == "__main__":
     last_ckpt_callback = callbacks.LastCheckpoint(model, last_ckpt_dir)
     callbacks_list: List[callbacks.Callback] = [tensorboard_callback, best_ckpt_callback, last_ckpt_callback]
     if pruning_scheduler is not None and not config.disable_dynamic:
-        callbacks_list.append(callbacks.PruningRatio(pruning_scheduler))
+        callbacks_list.append(callbacks.Stepwise(pruning_scheduler))
 
     # train
     manager.fit(dataset.train_loader, config.epochs, lr_scheduler=lr_scheduler, show_verbose=config.show_verbose, val_dataset=dataset.val_loader, use_multi_gpus=config.use_multi_gpus, callbacks_list=callbacks_list)
