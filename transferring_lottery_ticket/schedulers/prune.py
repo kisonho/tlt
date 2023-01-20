@@ -100,7 +100,7 @@ class _DynamicPruningScheduler(_PruningScheduler, abc.ABC, Generic[PruningMethod
         logging.info(f"Adjusted pruning ratio to {amount}")
 
 
-class ConstantScheduler(_DynamicPruningScheduler[PruningMethod], Generic[PruningMethod]):
+class ConstantScheduler(_DynamicPruningScheduler[PruningMethod]):
     """
     The scheduler that returns same pruning ratio for each step
 
@@ -132,19 +132,40 @@ class ConstantScheduler(_DynamicPruningScheduler[PruningMethod], Generic[Pruning
         return self.amount if self.current_step >= self._initial_step else None
 
 
-class DPFScheduler(_DynamicPruningScheduler[PruningMethod], Generic[PruningMethod]):
+class DPFScheduler(_DynamicPruningScheduler[PruningMethod]):
     """
     Pruning scheduler for DPF
 
     * extends: `_DynamicPruningScheduler`
-
     * Modified according to: https://github.com/INCHEON-CHO/Dynamic_Model_Pruning_with_Feedback/blob/f63cf144d13fee3f5f3e57d7c647b8a698c3cfd1/main.py#L219
+
+    - Properties:
+        - initial_amount: An `int` or `float` of initial pruning amount
+        - target_amount: An` int` or `float` of final pruning amount
+        - final_step: An `int` of final updating step
+        - freq: An `int` of updating frequency
     """
 
     __initial_amount: Union[int, float]
     __target_amount: Union[int, float]
     __final_step: int
     __freq: int
+
+    @property
+    def initial_amount(self) -> Union[int, float]:
+        return self.__initial_amount
+
+    @property
+    def target_amount(self) -> Union[int, float]:
+        return self.__target_amount
+
+    @property
+    def final_step(self) -> int:
+        return self.final_step
+
+    @property
+    def freq(self) -> int:
+        return self.__freq
 
     def __init__(self, method: PruningMethod, target_amount: Union[int, float], final_step: int, freq: int = 1) -> None:
         super().__init__(method)
@@ -153,15 +174,15 @@ class DPFScheduler(_DynamicPruningScheduler[PruningMethod], Generic[PruningMetho
         self.__final_step = final_step
         self.__freq = freq
         assert target_amount >= 0, f"[Schedule Error]: target_amount must be non-negative, got {target_amount}."
-        assert type(self.__initial_amount) is type(self.__target_amount), f"[Schedule Error]: The initial and target pruning amount type must be the same, got {type(self.__initial_amount)} and {type(self.__target_amount)}."
+        assert type(self.initial_amount) is type(self.target_amount), f"[Schedule Error]: The initial and target pruning amount type must be the same, got {type(self.initial_amount)} and {type(self.target_amount)}."
         assert final_step >= 0, f"[Schedule Error]: The final_step must be non-negative, got {final_step}."
         assert freq > 0, f"[Schedule Error]: The freq must be positive, got {freq}."
 
     def update_amount(self) -> Optional[Union[int, float]]:
         if self.current_step % self.__freq == 0:
             if self.current_step < self.__final_step:
-                return type(self.__target_amount)(self.__target_amount - (self.__target_amount - self.__initial_amount) * (1 - (self.current_step + 1) / self.__final_step) ** 3)
+                return type(self.target_amount)(self.target_amount - (self.target_amount - self.initial_amount) * (1 - (self.current_step + 1) / self.final_step) ** 3)
             else:
-                return self.__target_amount
+                return self.target_amount
         else:
             return None

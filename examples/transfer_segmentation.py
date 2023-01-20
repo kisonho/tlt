@@ -75,7 +75,7 @@ if __name__ == "__main__":
     lr_scheduler_callback = callbacks.LrSchedueler(lr_scheduler, tf_board_writer=tensorboard_callback.writer)
     callbacks_list: List[callbacks.Callback] = [tensorboard_callback, best_ckpt_callback, last_ckpt_callback, lr_scheduler_callback]
     if pruning_scheduler is not None:
-        callbacks_list.append(callbacks.PruningRatio(pruning_scheduler))
+        callbacks_list.append(callbacks.Stepwise(pruning_scheduler))
 
     # train
     manager.fit(training_dataset, config.epochs, show_verbose=config.show_verbose, val_dataset=validation_dataset, use_multi_gpus=config.use_multi_gpus, callbacks_list=callbacks_list)
