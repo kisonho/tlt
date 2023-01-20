@@ -1,6 +1,6 @@
 from torchmanager.callbacks import *  # type: ignore
 
-from typing import Any
+from torchmanager_core.typing import Any
 
 from .protocols import Steppable
 

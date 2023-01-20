@@ -1,6 +1,6 @@
 import logging, os, torch, torchmanager, transferring_lottery_ticket as prune
 from transferring_lottery_ticket import callbacks, schedulers
-from typing import List
+from typing import Dict, List
 
 import applications, data
 from configs import ClassificationConfig as Config
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     parameters = model.parameters()
     optimizer = torch.optim.SGD(parameters, config.learning_rate, momentum=0.9, weight_decay=config.weight_decay)
     loss_fn = torchmanager.losses.CrossEntropy()
-    metric_fns = {'accuracy': torchmanager.metrics.SparseCategoricalAccuracy()}
+    metric_fns: Dict[str, torchmanager.metrics.Metric] = {'accuracy': torchmanager.metrics.SparseCategoricalAccuracy()}
     manager = torchmanager.Manager(model, optimizer, loss_fn=loss_fn, metrics=metric_fns)
 
     # save initialized model

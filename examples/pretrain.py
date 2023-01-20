@@ -1,6 +1,6 @@
 import os, torch, torchmanager, torchvision
 from torch.nn.utils import prune
-from typing import Dict
+from typing import Dict, List
 
 from configs import PretrainingConfig as Config
 from data import datasets
@@ -13,13 +13,13 @@ if __name__ == "__main__":
     model = torchvision.models.resnet50(pretrained=True)
 
     # prune model
-    prunable_params: list[tuple[torch.nn.Module, str]] = [(m, "weight") for m in list(model.modules())[1:-2] if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear)]
+    prunable_params: List[tuple[torch.nn.Module, str]] = [(m, "weight") for m in list(model.modules())[1:-2] if isinstance(m, torch.nn.Conv2d) or isinstance(m, torch.nn.Linear)]
     prune.global_unstructured(prunable_params, prune.L1Unstructured, amount=config.pruning_ratio)
 
     # initialize optimizer, loss function, and metrics
     sgd = torch.optim.SGD(model.parameters(), config.learning_rate, momentum=0.9, weight_decay=config.weight_decay)
     cross_entropy = torchmanager.losses.CrossEntropy()
-    metrics: Dict[str, torch.nn.Module] = {'accuracy': torchmanager.metrics.SparseCategoricalAccuracy()}
+    metrics: Dict[str, torchmanager.metrics.Metric] = {'accuracy': torchmanager.metrics.SparseCategoricalAccuracy()}
 
     # initialize manager
     manager = torchmanager.Manager(model, optimizer=sgd, loss_fn=cross_entropy, metrics=metrics)
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     tensorboard_callback = torchmanager.callbacks.TensorBoard(data_dir)
     best_ckpt_callback = torchmanager.callbacks.BestCheckpoint('accuracy', model, best_ckpt_dir)
     last_ckpt_callback = torchmanager.callbacks.Checkpoint(model, last_ckpt_dir)
-    callbacks_list: list[torchmanager.callbacks.Callback] = [tensorboard_callback, best_ckpt_callback, last_ckpt_callback]
+    callbacks_list: List[torchmanager.callbacks.Callback] = [tensorboard_callback, best_ckpt_callback, last_ckpt_callback]
 
     # train model
     manager.fit(training_dataset, config.epochs, show_verbose=config.show_verbose, val_dataset=validation_dataset, use_multi_gpus=config.use_multi_gpus, callbacks_list=callbacks_list)

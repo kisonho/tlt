@@ -1,6 +1,5 @@
-from typing import Protocol
-
-import abc
+from torchmanager_core import abc
+from torchmanager_core.typing import Protocol
 
 
 class Steppable(Protocol):
