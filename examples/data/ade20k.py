@@ -2,11 +2,11 @@
 Code modified from:
 https://github.com/CSAILVision/semantic-segmentation-pytorch
 """
-import abc, os, json, numpy as np, torch
+import os, json, numpy as np, torch
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
-from typing import Any, NamedTuple, Sequence, Union
+from typing import Any, Dict, List, NamedTuple, Sequence, Tuple, Union
 
 
 def imresize(im, size, interp='bilinear'):
@@ -32,10 +32,10 @@ class DatasetOptions(NamedTuple):
 class BaseDataset(Dataset):
     img_max_size: int
     img_sizes: Sequence[int]
-    list_sample: list[dict[str, Any]]
+    list_sample: List[Dict[str, Any]]
     padding_constant: int
 
-    def __init__(self, odgt: Union[str, list[Any]], opt: DatasetOptions, **kwargs):
+    def __init__(self, odgt: Union[str, List[Any]], opt: DatasetOptions, **kwargs):
         # parse options
         self.img_sizes = opt.img_sizes
         self.img_max_size = opt.img_max_size
@@ -53,7 +53,7 @@ class BaseDataset(Dataset):
     def __len__(self) -> int:
         return len(self.list_sample)
 
-    def parse_input_list(self, odgt: Union[str, list[Any]], max_sample: int = -1, start_idx: int = -1, end_idx = -1) -> None:
+    def parse_input_list(self, odgt: Union[str, List[Any]], max_sample: int = -1, start_idx: int = -1, end_idx = -1) -> None:
         if isinstance(odgt, list):
             self.list_sample = odgt
         elif isinstance(odgt, str):
@@ -88,7 +88,7 @@ class TrainDataset(BaseDataset):
     segm_downsampling_rate: int
     if_shuffled: bool
 
-    def __init__(self, root_dataset: str, odgt: Union[str, list[Any]], opt: DatasetOptions, **kwargs):
+    def __init__(self, root_dataset: str, odgt: Union[str, List[Any]], opt: DatasetOptions, **kwargs):
         super(TrainDataset, self).__init__(odgt, opt, **kwargs)
         self.root_dataset = root_dataset
         # down sampling rate of segm labe
@@ -161,11 +161,11 @@ class TrainDataset(BaseDataset):
 class ValDataset(BaseDataset):
     root_dataset: str
 
-    def __init__(self, root_dataset: str, odgt: Union[str, list[Any]], opt: DatasetOptions, **kwargs):
+    def __init__(self, root_dataset: str, odgt: Union[str, List[Any]], opt: DatasetOptions, **kwargs):
         super(ValDataset, self).__init__(odgt, opt, **kwargs)
         self.root_dataset = root_dataset
 
-    def __getitem__(self, index: int) -> tuple[torch.Tensor, torch.Tensor]:
+    def __getitem__(self, index: int) -> Tuple[torch.Tensor, torch.Tensor]:
         this_record = self.list_sample[index]
         # load image and label
         image_path = os.path.join(self.root_dataset, this_record['fpath_img'])
@@ -205,10 +205,10 @@ class ValDataset(BaseDataset):
 
 
 class TestDataset(BaseDataset):
-    def __init__(self, odgt: Union[str, list[Any]], opt: DatasetOptions, **kwargs):
+    def __init__(self, odgt: Union[str, List[Any]], opt: DatasetOptions, **kwargs):
         super(TestDataset, self).__init__(odgt, opt, **kwargs)
 
-    def __getitem__(self, index: int) -> tuple[torch.Tensor, None]:
+    def __getitem__(self, index: int) -> Tuple[torch.Tensor, None]:
         this_record = self.list_sample[index]
         # load image
         image_path = this_record['fpath_img']
