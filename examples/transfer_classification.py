@@ -1,5 +1,5 @@
-import logging, os, torch, torchmanager, transferring_lottery_ticket as prune
-from transferring_lottery_ticket import callbacks, schedulers
+import logging, os, torch, torchmanager, tlt as prune
+from tlt import callbacks, schedulers
 from typing import Dict, List
 
 import applications, data

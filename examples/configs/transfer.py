@@ -1,4 +1,4 @@
-import argparse, logging, os, torch, torchmanager, transferring_lottery_ticket as prune
+import argparse, logging, os, torch, torchmanager, tlt as prune
 from typing import Any
 
 from .pruning import Config as _PruningConfig
