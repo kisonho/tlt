@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 import torch
 from torchmanager.train import learning_rate
-from transferring_lottery_ticket.callbacks import * # type: ignore
+from tlt.callbacks import * # type: ignore
 
 class WarmUpLrScheduler(LrSchedueler):
     """`LrScheduler` with linear warmup"""

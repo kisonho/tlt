@@ -160,7 +160,7 @@ class CIFAR100(Dataset):
         return train_loader, val_loader, test_loader
 
 class Cityscapes(Dataset):
-    """A VOC Segmentation Dataset"""
+    """A Cityscapes Segmentation Dataset"""
     input_channels: int = 3
     num_classes: int = 20
     _valset: torchvision.datasets.Cityscapes
