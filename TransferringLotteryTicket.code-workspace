@@ -9,6 +9,10 @@
 		"editor.wordWrap": "on",
 		"editor.wordWrapColumn": 40,
 		"diffEditor.wordWrap": "on",
-		"files.autoSave": "afterDelay"
+		"files.autoSave": "afterDelay",
+		"[python]": {
+			"editor.defaultFormatter": "ms-python.autopep8"
+		},
+		"python.formatting.provider": "none"
 	}
 }

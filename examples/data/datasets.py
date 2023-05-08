@@ -8,7 +8,6 @@ from torch.utils.data import Dataset as TorchDataset, DataLoader, Subset
 from torchvision.datasets import * # type: ignore
 
 from . import transforms
-from .ade20k import DatasetOptions as ADE20KOptions, TrainDataset as ADE20KTrainingDataset, ValDataset as ADE20KValidationDataset
 
 class Dataset(abc.ABC):
     """
@@ -72,26 +71,6 @@ class Dataset(abc.ABC):
         - Returns: A `tuple` of three `DataLoader` objects for training, validation, and testing loader
         """
         raise NotImplementedError
-    
-class ADE20K(Dataset):
-    input_channels: int = 3
-    num_classes: int = 150
-
-    def _get_dataset(self, dataset_dir: str = os.path.normpath("~/Documents/Data/")) -> Tuple[ADE20KTrainingDataset, ADE20KValidationDataset]:
-        # initialize odgt path and options
-        training_odgt = os.path.join(dataset_dir, "training.odgt")
-        testing_odgt = os.path.join(dataset_dir, "testing.odgt")
-        ade20k_options = ADE20KOptions((300, 375, 450, 525, 600), 1000, 8, 8)
-        training_dataset = ADE20KTrainingDataset(dataset_dir, training_odgt, ade20k_options)
-        testing_dataset = ADE20KValidationDataset(dataset_dir, testing_odgt, ade20k_options)
-        return training_dataset, testing_dataset
-
-    def _get_dataset_loader(self, batch_size: int = 128, workers: Optional[int] = os.cpu_count()) -> Tuple[DataLoader, DataLoader, DataLoader]:
-        workers = 4 if workers is None else workers
-        train_loader = DataLoader(self._trainset, batch_size=batch_size, shuffle=True, num_workers=workers, drop_last=True)
-        val_loader = DataLoader(self._testset, batch_size=batch_size, shuffle=False, num_workers=workers)
-        test_loader = DataLoader(self._testset, batch_size=batch_size, shuffle=False, num_workers=workers)
-        return train_loader, val_loader, test_loader
 
 class CIFAR10(Dataset):
     """A Cifar 10 dataset"""
