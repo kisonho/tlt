@@ -1,3 +1,7 @@
+"""
+Training scripts for classification tasks
+"""
+
 import logging, os, torch, torchmanager, tlt as prune
 from tlt import callbacks, schedulers
 from typing import Dict, List
@@ -60,7 +64,7 @@ if __name__ == "__main__":
         callbacks_list.append(callbacks.Stepwise(pruning_scheduler))
 
     # train
-    manager.fit(dataset.train_loader, config.epochs, lr_scheduler=lr_scheduler, show_verbose=config.show_verbose, val_dataset=dataset.val_loader, use_multi_gpus=config.use_multi_gpus, callbacks_list=callbacks_list)
+    manager.fit(dataset.train_loader, config.epochs, lr_scheduler=lr_scheduler, show_verbose=config.show_verbose, val_dataset=dataset.val_loader, use_multi_gpus=config.use_multi_gpus, callbacks_list=callbacks_list)  # type: ignore
 
     # restore best checkpoint
     best_ckpt = torchmanager.train.Checkpoint.from_saved(best_ckpt_dir)

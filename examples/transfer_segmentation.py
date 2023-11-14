@@ -1,3 +1,9 @@
+"""
+Main training script for segmentation tasks
+
+Require torchmanager >= 1.0.3
+"""
+
 import logging, os, torch, torchmanager, tlt as prune
 from tlt import callbacks, schedulers
 from typing import List
@@ -72,7 +78,7 @@ if __name__ == "__main__":
     tensorboard_callback = callbacks.TensorBoard(data_dir)
     best_ckpt_callback = callbacks.BestCheckpoint("mIoU", model, best_ckpt_dir)
     last_ckpt_callback = callbacks.LastCheckpoint(model, last_ckpt_dir)
-    lr_scheduler_callback = callbacks.LrSchedueler(lr_scheduler, tf_board_writer=tensorboard_callback.writer)
+    lr_scheduler_callback = callbacks.LrSchedueler(lr_scheduler, tf_board_writer=tensorboard_callback.writer)  # type: ignore
     callbacks_list: List[callbacks.Callback] = [tensorboard_callback, best_ckpt_callback, last_ckpt_callback, lr_scheduler_callback]
     if pruning_scheduler is not None:
         callbacks_list.append(callbacks.Stepwise(pruning_scheduler))

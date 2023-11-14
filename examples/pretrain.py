@@ -1,3 +1,7 @@
+"""
+Training script for pre-training tasks
+"""
+
 import os, torch, torchmanager, torchvision
 from torch.nn.utils import prune
 from typing import Dict, List
